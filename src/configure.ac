@@ -21,31 +21,29 @@ dnl  PERFORMANCE OF THIS SOFTWARE.
 dnl
 dnl Process this file with autoconf to create configure.
 
-AC_PREREQ([2.57])
-AC_INIT(xkbutils,[1.0.1], [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg],xkbutils)
-AM_INIT_AUTOMAKE([dist-bzip2])
+AC_PREREQ([2.60])
+AC_INIT([xkbutils], [1.0.3],
+        [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], [xkbutils])
+AM_INIT_AUTOMAKE([foreign dist-bzip2])
 AM_MAINTAINER_MODE
+
+# Require X.Org macros 1.8 or later for MAN_SUBSTS set by XORG_MANPAGE_SECTIONS
+m4_ifndef([XORG_MACROS_VERSION],
+          [m4_fatal([must install xorg-macros 1.8 or later before running autoconf/autogen])])
+XORG_MACROS_VERSION(1.8)
+XORG_DEFAULT_OPTIONS
 
 AM_CONFIG_HEADER(config.h)
 
-AC_PROG_CC
-AC_PROG_INSTALL
+AM_PROG_CC_C_O
 
 # xkbvleds checks
-XAW_CHECK_XPRINT_SUPPORT(XKBVLEDS)
-AC_SUBST(XKBVLEDS_CFLAGS)
-AC_SUBST(XKBVLEDS_LIBS)
+PKG_CHECK_MODULES(XKBVLEDS, xproto xaw7 xt x11)
 
 # xkbbell checks
-PKG_CHECK_MODULES(XKBBELL, xkbfile x11)
-AC_SUBST(XKBBELL_CFLAGS)
-AC_SUBST(XKBBELL_LIBS)
+PKG_CHECK_MODULES(XKBBELL, xproto inputproto x11)
 
 # xkbwatch checks
-XAW_CHECK_XPRINT_SUPPORT(XKBWATCH)
-AC_SUBST(XKBWATCH_CFLAGS)
-AC_SUBST(XKBWATCH_LIBS)
-
-XORG_RELEASE_VERSION
+PKG_CHECK_MODULES(XKBWATCH, xproto xaw7 xt x11)
 
 AC_OUTPUT([Makefile])

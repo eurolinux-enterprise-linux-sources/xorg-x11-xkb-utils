@@ -1,21 +1,25 @@
 Summary: X.Org X11 xkb utilities
 Name: xorg-x11-xkb-utils
-Version: 7.4
-Release: 6%{?dist}
+Version: 7.7
+Release: 4%{?dist}
 License: MIT
 Group: User Interface/X
 URL: http://www.x.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 # use the macro so the doc dir is changed automagically
-%define xkbutils_version 1.0.1
+%define xkbutils_version 1.0.3
 Source0: ftp://ftp.x.org/pub/individual/app/xkbutils-%{xkbutils_version}.tar.bz2
-Source1: ftp://ftp.x.org/pub/individual/app/xkbcomp-1.1.1.tar.bz2
-Source2: ftp://ftp.x.org/pub/individual/app/xkbevd-1.0.2.tar.bz2
-Source3: ftp://ftp.x.org/pub/individual/app/xkbprint-1.0.1.tar.bz2
-Source4: ftp://ftp.x.org/pub/individual/app/setxkbmap-1.1.0.tar.bz2
+Source1: ftp://ftp.x.org/pub/individual/app/xkbcomp-1.2.4.tar.bz2
+Source2: ftp://ftp.x.org/pub/individual/app/xkbevd-1.1.3.tar.bz2
+Source3: ftp://ftp.x.org/pub/individual/app/xkbprint-1.0.3.tar.bz2
+Source4: ftp://ftp.x.org/pub/individual/app/setxkbmap-1.3.0.tar.bz2
+
+# xkbcomp: Bug 872057 - XKB directory listing is incomplete
+Patch01: 0001-Reset-scan-state-when-opening-a-new-file.patch
 
 BuildRequires: pkgconfig
+BuildRequires: byacc
 BuildRequires: libxkbfile-devel
 BuildRequires: libX11-devel
 BuildRequires: libXaw-devel
@@ -36,6 +40,13 @@ BuildRequires: libXpm-devel
 Provides: setxkbmap xkbcomp
 Obsoletes: XFree86 xorg-x11
 
+%package devel
+Summary:        X.Org X11 xkb utilities development package.
+Group:          Development/Libraries
+Requires:       pkgconfig
+%description devel
+X.Org X11 xkb utilities development files.
+
 %package -n xorg-x11-xkb-extras
 Summary: X.Org X11 xkb gadgets
 Provides: xkbevd xkbprint xkbutils
@@ -48,13 +59,15 @@ X.Org X11 xkb gadgets
 
 %prep
 %setup -q -c %{name}-%{version} -a1 -a2 -a3 -a4
+%patch01 -p1
 
 %build
 export CFLAGS="$RPM_OPT_FLAGS -DHAVE_STRCASECMP -Os"
 for pkg in xkbutils setxkbmap xkbcomp xkbevd xkbprint ; do
     pushd $pkg-*
+    [ $pkg == xkbcomp ] && rm xkbparse.c # force regen
     %configure
-    make
+    make V=1
     popd
 done
 
@@ -78,17 +91,30 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -n xorg-x11-xkb-extras
 %defattr(-,root,root,-)
-%doc xkbutils-%{xkbutils_version}/AUTHORS xkbutils-%{xkbutils_version}/COPYING xkbutils-%{xkbutils_version}/INSTALL
-%doc xkbutils-%{xkbutils_version}/NEWS xkbutils-%{xkbutils_version}/README
+%doc xkbutils-%{xkbutils_version}/COPYING
+%doc xkbutils-%{xkbutils_version}/README
 %{_bindir}/xkbbell
 %{_bindir}/xkbevd
 %{_bindir}/xkbprint
 %{_bindir}/xkbvleds
 %{_bindir}/xkbwatch
+%{_mandir}/man1/xkbbell.1*
 %{_mandir}/man1/xkbevd.1*
 %{_mandir}/man1/xkbprint.1*
+%{_mandir}/man1/xkbvleds.*
+%{_mandir}/man1/xkbwatch.*
+
+%files devel
+%defattr(-,root,root,-)
+%{_libdir}/pkgconfig/xkbcomp.pc
 
 %changelog
+* Fri Nov 02 2012 Peter Hutterer <peter.hutterer@redhat.com> 7.7-4
+- Fix XKB directory listing generation (#872057)
+
+* Tue Aug 28 2012 Peter Hutterer <peter.hutterer@redhat.com> 7.7-3
+- Merge from F18 (#835282)
+
 * Wed Oct 07 2009 Adam Jackson <ajax@redhat.com> 7.4-6
 - xkbcomp 1.1.1
 
