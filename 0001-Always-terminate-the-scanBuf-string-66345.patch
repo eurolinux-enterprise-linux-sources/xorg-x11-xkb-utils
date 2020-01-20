@@ -1,0 +1,131 @@
+From cdcd552041fc1325a2a81e3374fadb0dd15950dc Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Thu, 11 Jul 2013 13:26:18 +1000
+Subject: [PATCH xkbcomp] Always terminate the scanBuf string (#66345)
+
+If a key name exceeds 4 characters, the content of scanBuf is not
+null-terminated, giving error messages like
+
+syntax error: line 7 of test.xkb
+last scanned symbol is: FOOBARm
+Errors encountered in test.xkb; not compiled.
+
+(last character of the preceding 'maximum' statement in this case)
+
+X.Org Bug 66345 <http://bugs.freedesktop.org/show_bug.cgi?id=66345>
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ xkbscan.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/xkbcomp-1.2.4/xkbscan.c b/xkbscan.c
+index 7b91b45..144f315 100644
+--- a/xkbcomp-1.2.4/xkbscan.c
++++ b/xkbcomp-1.2.4/xkbscan.c
+@@ -401,6 +401,7 @@ static int
+ yyGetKeyName(void)
+ {
+     int ch, i;
++    int last;
+ 
+     i = 0;
+     while (((ch = scanchar()) != EOF) && (ch != '>'))
+@@ -466,12 +467,20 @@ yyGetKeyName(void)
+         if (i < sizeof(scanBuf) - 1)
+             scanBuf[i++] = ch;
+     }
++
++    if (i < sizeof(scanBuf) - i)
++        last = i;
++    else
++        last = sizeof(scanBuf) - 1;
++
++    scanBuf[last] = '\0';
++
+     if ((ch == '>') && (i < 5))
+     {
+-        scanBuf[i++] = '\0';
+         scanStrLine = lineNum;
+         return KEYNAME;
+     }
++
+     return ERROR_TOK;
+ }
+ 
+-- 
+1.8.2.1
+
+From 24d18e0a844041ef82441adb16aa18cc4b4814ae Mon Sep 17 00:00:00 2001
+From: Benno Schulenberg <bensberg@justemail.net>
+Date: Wed, 28 Aug 2013 20:03:30 +0200
+Subject: [PATCH xkbcomp] Making sure that a copied string is always
+ null-terminated (#66345).
+
+A more minimalistic and formally correct solution.
+This amends and extends the previous fix for bug #66345,
+fixing not just yyGetKeyName() but also yyGetString().
+
+Signed-off-by: Benno Schulenberg <bensberg@justemail.net>
+
+Fixes a typo from cdcd552 (should be sizeof - 1, not sizeof -i).
+Code flows that i is at most sizeof(scanBuf) - 1, so last is not needed.
+
+Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ xkbscan.c | 14 ++------------
+ 1 file changed, 2 insertions(+), 12 deletions(-)
+
+diff --git a/xkbcomp-1.2.4/xkbscan.c b/xkbscan.c
+index 144f315..237f520 100644
+--- a/xkbcomp-1.2.4/xkbscan.c
++++ b/xkbcomp-1.2.4/xkbscan.c
+@@ -388,9 +388,9 @@ yyGetString(void)
+         if (i < sizeof(scanBuf) - 1)
+             scanBuf[i++] = ch;
+     }
++    scanBuf[i] = '\0';
+     if (ch == '"')
+     {
+-        scanBuf[i++] = '\0';
+         scanStrLine = lineNum;
+         return STRING;
+     }
+@@ -401,7 +401,6 @@ static int
+ yyGetKeyName(void)
+ {
+     int ch, i;
+-    int last;
+ 
+     i = 0;
+     while (((ch = scanchar()) != EOF) && (ch != '>'))
+@@ -463,24 +462,15 @@ yyGetKeyName(void)
+             else
+                 return ERROR_TOK;
+         }
+-
+         if (i < sizeof(scanBuf) - 1)
+             scanBuf[i++] = ch;
+     }
+-
+-    if (i < sizeof(scanBuf) - i)
+-        last = i;
+-    else
+-        last = sizeof(scanBuf) - 1;
+-
+-    scanBuf[last] = '\0';
+-
++    scanBuf[i] = '\0';
+     if ((ch == '>') && (i < 5))
+     {
+         scanStrLine = lineNum;
+         return KEYNAME;
+     }
+-
+     return ERROR_TOK;
+ }
+ 
+-- 
+1.8.2.1
+

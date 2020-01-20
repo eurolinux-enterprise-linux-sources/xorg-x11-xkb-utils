@@ -20,16 +20,29 @@
 #  PERFORMANCE OF THIS SOFTWARE.
 
 SUBDIRS = man
-bin_PROGRAMS = setxkbmap
+bin_PROGRAMS = xkbvleds xkbwatch xkbbell
 
-XKBCONFIGROOT=@XKBCONFIGROOT@
+AM_CFLAGS = $(CWARNFLAGS)
 
-AM_CFLAGS = $(CWARNFLAGS) $(SETXKBMAP_CFLAGS) \
-	-DDFLT_XKB_CONFIG_ROOT=\"$(XKBCONFIGROOT)\"
-setxkbmap_LDADD = $(SETXKBMAP_LIBS)
+# xkbvleds
 
-setxkbmap_SOURCES =	\
-        setxkbmap.c
+xkbvleds_SOURCES = xkbvleds.c LED.c LED.h LEDP.h utils.c utils.h
+
+xkbvleds_CFLAGS = $(XKBVLEDS_CFLAGS) $(AM_CFLAGS)
+xkbvleds_LDADD = $(XKBVLEDS_LIBS)
+
+# xkbbell
+
+xkbbell_SOURCES = xkbbell.c
+
+xkbbell_CFLAGS = $(XKBBELL_CFLAGS) $(AM_CFLAGS)
+xkbbell_LDADD = $(XKBBELL_LIBS)
+
+# xkbwatch
+
+xkbwatch_SOURCES = xkbwatch.c LED.c LED.h LEDP.h utils.c utils.h
+xkbwatch_CFLAGS = $(XKBWATCH_CFLAGS) $(AM_CFLAGS)
+xkbwatch_LDADD = $(XKBWATCH_LIBS)
 
 MAINTAINERCLEANFILES = ChangeLog INSTALL
 
@@ -42,11 +55,3 @@ ChangeLog:
 	$(CHANGELOG_CMD)
 
 dist-hook: ChangeLog INSTALL
-
-if LINT
-ALL_LINT_FLAGS=$(LINT_FLAGS) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-		$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS)
-
-lint:
-	$(LINT) $(ALL_LINT_FLAGS) $(setxkbmap_SOURCES)
-endif LINT

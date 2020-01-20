@@ -1,0 +1,36 @@
+From 1955fe3e6b65087e596d186f28cde5d76f0f875b Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Tue, 21 May 2013 15:19:35 +1000
+Subject: [PATCH xkbcomp] man: document -help/-?, -em1, -emp, -eml
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ man/xkbcomp.man | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/xkbcomp-1.2.4/man/xkbcomp.man b/man/xkbcomp.man
+index 0486b7d..667c985 100644
+--- a/xkbcomp-1.2.4/man/xkbcomp.man
++++ b/xkbcomp-1.2.4/man/xkbcomp.man
+@@ -47,6 +47,18 @@ Produce a C header file as output (.h extension).
+ .B \-dflts
+ Compute defaults for any missing components, such as key names.
+ .TP 8
++.B \-em1 \fImsg\fP
++Print \fImsg\fP before printing first error message.
++.TP 8
++.B \-emp \fImsg\fP
++Print \fImsg\fP at the start of each message line.
++.TP 8
++.B \-eml \fImsg\fP
++If there were any errors, print \fImsg\fP before exiting.
++.TP 8
++.B \-help, -?
++Show available options.
++.TP 8
+ .B \-I\fIdir\fP
+ Specifies top-level directories to be searched for files included by the
+ keymap description.  After all directories specified by \-I options
+-- 
+1.8.1.4
+

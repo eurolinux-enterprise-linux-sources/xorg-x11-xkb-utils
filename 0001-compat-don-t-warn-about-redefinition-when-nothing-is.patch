@@ -1,0 +1,30 @@
+From 839ccda42d8b088d94324cd77c4be954859914d3 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Wed, 28 Aug 2013 15:20:56 +1000
+Subject: [PATCH xkbcomp] compat: don't warn about redefinition when nothing is
+ defined yet
+
+info->groupCompat[i] is bzero'd on init, define is 0. Don't warn when that
+is the case, otherwise any "group 2 = ..." statement will cause an error.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ compat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/xkbcomp-1.2.4/compat.c b/compat.c
+index 2b00142..f4d82a6 100644
+--- a/xkbcomp-1.2.4/compat.c
++++ b/xkbcomp-1.2.4/compat.c
+@@ -274,7 +274,7 @@ AddGroupCompat(CompatInfo * info, unsigned group, GroupCompatInfo * newGC)
+     {
+         return True;
+     }
+-    if (((gc->fileID == newGC->fileID) && (warningLevel > 0))
++    if (((gc->defined && gc->fileID == newGC->fileID) && (warningLevel > 0))
+         || (warningLevel > 9))
+     {
+         WARN1("Compat map for group %d redefined\n", group + 1);
+-- 
+1.8.2.1
+
