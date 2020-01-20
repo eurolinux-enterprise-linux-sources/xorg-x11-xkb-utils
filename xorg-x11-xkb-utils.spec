@@ -1,24 +1,24 @@
 # Component versions
-%define setxkbmap 1.3.0
-%define xkbcomp 1.3.0
-%define xkbevd 1.1.3
-%define xkbprint 1.0.3
+%define setxkbmap 1.3.1
+%define xkbcomp 1.4.2
+%define xkbevd 1.1.4
+%define xkbprint 1.0.4
 %define xkbutils 1.0.4
 
 Summary:    X.Org X11 xkb utilities
 Name:       xorg-x11-xkb-utils
 Version:    7.7
-Release:    12%{?dist}
+Release:    14%{?dist}
 License:    MIT
 Group:      User Interface/X
 URL:        http://www.x.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-Source0:    http://www.x.org/pub/individual/app/setxkbmap-%{setxkbmap}.tar.bz2
-Source1:    http://www.x.org/pub/individual/app/xkbcomp-%{xkbcomp}.tar.bz2
-Source2:    http://www.x.org/pub/individual/app/xkbevd-%{xkbevd}.tar.bz2
-Source3:    http://www.x.org/pub/individual/app/xkbprint-%{xkbprint}.tar.bz2
-Source4:    http://www.x.org/pub/individual/app/xkbutils-%{xkbutils}.tar.bz2
+Source0:    https://www.x.org/pub/individual/app/setxkbmap-%{setxkbmap}.tar.bz2
+Source1:    https://www.x.org/pub/individual/app/xkbcomp-%{xkbcomp}.tar.bz2
+Source2:    https://www.x.org/pub/individual/app/xkbevd-%{xkbevd}.tar.bz2
+Source3:    https://www.x.org/pub/individual/app/xkbprint-%{xkbprint}.tar.bz2
+Source4:    https://www.x.org/pub/individual/app/xkbutils-%{xkbutils}.tar.bz2
 
 BuildRequires:  byacc
 BuildRequires:  pkgconfig(x11)
@@ -26,9 +26,6 @@ BuildRequires:  pkgconfig(xaw7)
 BuildRequires:  pkgconfig(xkbfile)
 BuildRequires:  pkgconfig(xorg-macros) >= 1.8
 BuildRequires:  pkgconfig(xt)
-# xkbutils/xkbvleds requires libXext and libXpm, but autotools don't check/require them:
-BuildRequires:  pkgconfig(xext)
-BuildRequires:  pkgconfig(xpm)
 
 
 Provides:   setxkbmap = %{setxkbmap}
@@ -41,6 +38,7 @@ X.Org X11 xkb core utilities.
 Summary:    X.Org X11 xkb utilities development package
 Group:      Development/Libraries
 Requires:   pkgconfig
+Requires:   xkbcomp
 
 %description devel
 X.Org X11 xkb utilities development files.
@@ -112,6 +110,16 @@ X.Org X11 xkb gadgets.
 %{_libdir}/pkgconfig/xkbcomp.pc
 
 %changelog
+* Fri Jun 08 2018 Peter Hutterer <peter.hutterer@redhat.com> 7.7-14
+- xkbcomp 1.4.2 (#1564634)
+
+* Tue May 15 2018 Peter Hutterer <peter.hutterer@redhat.com> 7.7-13
+- Sync with F28 (#1564634)
+- setxkbmap 1.3.1
+- xkbcomp 1.4.1
+- xkbevd 1.1.4
+- xkbprint 1.0.4
+
 * Mon Apr 20 2015 Peter Hutterer <peter.hutterer@redhat.com> 7.7-12
 - Merge with F22 (#1194895)
 
