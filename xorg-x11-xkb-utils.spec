@@ -1,7 +1,7 @@
 Summary: X.Org X11 xkb utilities
 Name: xorg-x11-xkb-utils
 Version: 7.7
-Release: 8%{?dist}
+Release: 9.1%{?dist}
 License: MIT
 Group: User Interface/X
 URL: http://www.x.org
@@ -116,6 +116,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/xkbcomp.pc
 
 %changelog
+* Wed Feb 12 2014 Adam Jackson <ajax@redhat.com> 7.7-9.1
+- Mass rebuild
+
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 7.7-9
+- Mass rebuild 2013-12-27
+
 * Thu Aug 29 2013 Peter Hutterer <peter.hutterer@redhat.com> 7.7-8
 - Fix warning about redefinition of compat map (#968996)
 - Null-terminate long key names (#1002343)
